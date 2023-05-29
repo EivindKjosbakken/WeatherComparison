@@ -40,7 +40,7 @@ def getRainNext24HoursStorm(url):
 
 def getRainNext24HoursYr(url):
 
-	response=requests.get(url, headers={"User-Agent":"oieivind@gmail.com sitename-TBD"})
+	response=requests.get(url, headers={"User-Agent":"my_email my_sitename"})
 	responseDict = response.json()
 
 	responseDict["properties"]["timeseries"]
