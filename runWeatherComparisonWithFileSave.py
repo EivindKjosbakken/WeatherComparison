@@ -6,7 +6,6 @@ from datetime import date
 import requests
 import datetime as dt
 import schedule
-import pymongo
 import tweepy
 import json
 from os import path
