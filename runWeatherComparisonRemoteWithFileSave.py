@@ -12,10 +12,10 @@ import json
 from os import path
 
 
-API_KEY = '*'
-API_SECRET = '*'
-ACCESS_KEY = '*'
-ACCESS_SECRET = '*'
+API_KEY = 'NcyNNM5K7MOE8VNXLd8OAlJIh'
+API_SECRET = 'yJu3LHHrN0RxyRT9Zuy8Uh6aZryqShJ6Yb2OaHaKNfSlliDwuf'
+ACCESS_KEY = '524480388-Si4HsxqdcWwACIgRV2pXMqEZY7TDb7idlwfPXvVW'
+ACCESS_SECRET = 'BjMqiNGIJG9oMKzw2iAQft87tUsaSYYaBiwvIMOpYlqRm'
 
 
 def getSoup(url):
@@ -128,7 +128,7 @@ def saveToDict(stormRes, yrRes, historicDataRes, location):
 
 def saveToFile(hm, filename = "weatherData.json"):
     if path.isfile(filename) is False:
-        print("file does not exist, writing to file") #TODO write to file
+        print("file does not exist, writing to file") 
         with open(filename, 'w') as json_file:
             json.dump([hm], json_file, 
                                 indent=4,  
@@ -179,9 +179,10 @@ def findAccuracyForYesterday(currDate, weatherData):
         yrPred = yesterdayYrPreds[key]
         stormPred = yesterdayStormPreds[key]
         historicData = yesterdayHistoricData[key]
-        if (yrPred == historicData):
+        #give correct as binary, either there was rain or there was not rain
+        if (yrPred > 0 and historicData > 0) or (yrPred == 0 and historicData == 0):
             numCorrectYr += 1
-        if (stormPred == historicData):
+        if (stormPred > 0 and historicData > 0) or (stormPred == 0 and historicData == 0):
             numCorrectStorm += 1
     
     return numCorrectYr, numCorrectStorm, len(yesterdayYrPreds)
@@ -192,7 +193,7 @@ def getTodayTweetString(weatherData):
     if (res is None):
         return
     numCorrectYr, numCorrectStorm, numTotal = res
-    tweetString = (f"I går:\nYr: {numCorrectYr}/{numTotal} korrekte, Storm: {numCorrectStorm}/{numTotal} korrekte.\nPresison -> Yr: {round(numCorrectYr*100/numTotal, 2)}%, Storm: {round(numCorrectStorm*100/numTotal, 2)}%")
+    tweetString = (f"I går korrekte:\nYr: {numCorrectYr}/{numTotal}, Storm: {numCorrectStorm}/{numTotal}.\nI går presison -> Yr: {round(numCorrectYr*100/numTotal, 2)}%, Storm: {round(numCorrectStorm*100/numTotal, 2)}%")
     return tweetString
 
 def findAllTimeAccuracy(weatherData): #find accuracy for all days in total
@@ -210,7 +211,7 @@ def findAllTimeAccuracy(weatherData): #find accuracy for all days in total
         totTotal += numTotal
         currDate = currDate - dt.timedelta(days=1)
     
-    tweetString = (f"Totalt:\nYr: {totCorrectYr}/{totTotal} korrekte, Storm: {totCorrectStorm}/{totTotal} korrekte.\nTotal presisjon -> Yr: {round(totCorrectYr*100/totTotal, 2)}%, Storm: {round(totCorrectStorm*100/totTotal, 2)}%")
+    tweetString = (f"Totalt korrekte:\nYr: {totCorrectYr}/{totTotal}, Storm: {totCorrectStorm}/{totTotal}.\nTotal presisjon -> Yr: {round(totCorrectYr*100/totTotal, 2)}%, Storm: {round(totCorrectStorm*100/totTotal, 2)}%")
     return tweetString
 
 def tweetResults(location, filename = "weatherData.json"):
@@ -218,20 +219,22 @@ def tweetResults(location, filename = "weatherData.json"):
         weatherData = json.load(json_file)
     json_file.close()
 
-    startString = f"Ser på antall timer Yr/Storm korrekt melder om regn i {location}. Ser på timene fra kl 13, 14 og 15:"
+    startString = f"Ser på antall timer Yr/Storm korrekt melder regn i {location} for timene kl 13, 14 og 15:"
     todayTweetString = getTodayTweetString(weatherData)
     if (todayTweetString is None):
         print("Lacking historical data, add one day prior to be able to check results")
         return 
+    taggingString = " @storm_no @Meteorologene"
     totalTweetString = findAllTimeAccuracy(weatherData)
 
-    totalString = startString + "\n\n" + todayTweetString + "\n\n" + totalTweetString
+    totalString = startString + "\n\n" + todayTweetString + "\n\n" + totalTweetString + "\n\n" + taggingString
     
     auth = tweepy.OAuthHandler(API_KEY, API_SECRET)
     auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
     api = tweepy.API(auth)
-    api.update_status(totalString)
+    # api.update_status(totalString)
     print("TOTAL TWEET: \n\n", totalString)
+    print("len av tweet: ", len(totalString))
 
 
 def job():
