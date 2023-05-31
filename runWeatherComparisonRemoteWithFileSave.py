@@ -12,10 +12,10 @@ import json
 from os import path
 
 
-API_KEY = 'NcyNNM5K7MOE8VNXLd8OAlJIh'
-API_SECRET = 'yJu3LHHrN0RxyRT9Zuy8Uh6aZryqShJ6Yb2OaHaKNfSlliDwuf'
-ACCESS_KEY = '524480388-Si4HsxqdcWwACIgRV2pXMqEZY7TDb7idlwfPXvVW'
-ACCESS_SECRET = 'BjMqiNGIJG9oMKzw2iAQft87tUsaSYYaBiwvIMOpYlqRm'
+API_KEY = '*'
+API_SECRET = '*'
+ACCESS_KEY = '*'
+ACCESS_SECRET = '*'
 
 
 def getSoup(url):
